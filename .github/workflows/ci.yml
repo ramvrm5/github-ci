@@ -17,8 +17,6 @@ jobs:
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
-    - name: Deploy to Heroku
-      uses: akhileshns/heroku-deploy@v3.12.12
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
