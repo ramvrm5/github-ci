@@ -40,4 +40,4 @@ jobs:
         heroku git:remote -a github-init-ci
     - name: Deploy to Heroku
       run: |
-        git push heroku HEAD:master
+        git push heroku HEAD:master -f
