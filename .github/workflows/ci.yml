@@ -35,8 +35,8 @@ jobs:
         yarn run build --if-present
     
     - name: Add remote origin
-      run: |
-        git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
-    - name: Deploy to Heroku
-      run: |
-        git push heroku HEAD:master -f
+      run: heroku git:remote --app $HEROKU_APP_NAME
+    env:
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+    - name: Push to Heroku
+      run: git push heroku master
