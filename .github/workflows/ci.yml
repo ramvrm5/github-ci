@@ -15,15 +15,11 @@ jobs:
         node-version: [16.x, 14.x]
     
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          node-version: 17.x
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
     
     - name: yarn install
       run: |
@@ -37,10 +33,10 @@ jobs:
     - name: yarn build
       run: |
         yarn run build --if-present
-        
+    
     - name: Add remote origin
-      run: heroku git:remote --app $HEROKU_APP_NAME
-        env:
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-    - name: Push to Heroku
-        run: git push heroku master
+      run: |
+        git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+    - name: Deploy to Heroku
+      run: |
+        git push heroku HEAD:master -f
