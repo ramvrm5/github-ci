@@ -39,8 +39,7 @@ jobs:
 
     - name: Add remote origin
       run: |
-        echo ${{ secrets.HEROKU_API_KEY }},
-        echo ${{ secrets.HEROKU_APP_NAME }},
+        echo heroku_api_key,
         git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
     - name: Deploy to Heroku
       run: |
