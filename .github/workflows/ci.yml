@@ -6,38 +6,44 @@ on:
       - master 
 
 jobs:
-  build:
-
+  heroku-deploy:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [16.x, 14.x]
-    
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    
-    - name: yarn install
-      run: |
-        yarn install
-    - name: yarn test
-      run: |
-        yarn test 
-      env:
-        CI: true
-      
-    - name: yarn build
-      run: |
-        yarn run build --if-present
-    
-    - name: Add remote origin
-      run: |
-        heroku git:remote -a github-init-ci
-    - name: Deploy to Heroku
-      run: |
-        git push heroku HEAD:master -f
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+
+  custom-deploy:
+    # The `needs` is added to bypass:
+    # "Your account has reached its concurrent builds limit"
+    needs: heroku-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Heroku login credentials
+        run: |
+          cat > ~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      - name: Add Heroku remote
+        run: heroku git:remote --app $HEROKU_APP_NAME
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      - name: Push to Heroku
+        run: git push heroku master
