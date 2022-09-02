@@ -20,7 +20,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        fetch-depth: 0
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name:  ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          justlogin: true
     
     - name: yarn install
       run: |
@@ -34,19 +37,10 @@ jobs:
     - name: yarn build
       run: |
         yarn run build --if-present
+
     - name: Heroku login credentials
-        run: |
-          cat > ~/.netrc <<EOF
-            machine api.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-            machine git.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-          EOF
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      run: |
+        heroku auth:whoami
 
     - name: Add remote origin
       run: |
