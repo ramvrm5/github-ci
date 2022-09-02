@@ -21,9 +21,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name:  ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          justlogin: true
+        heroku_app_name:  ${{ secrets.HEROKU_APP_NAME }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
     
     - name: yarn install
       run: |
@@ -37,10 +36,6 @@ jobs:
     - name: yarn build
       run: |
         yarn run build --if-present
-
-    - name: Heroku login credentials
-      run: |
-        heroku auth:whoami
 
     - name: Add remote origin
       run: |
