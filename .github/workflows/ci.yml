@@ -20,9 +20,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name:  ${{ secrets.HEROKU_APP_NAME }}
-        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+        HEROKU_APP_NAME:  ${{ secrets.HEROKU_APP_NAME }}
+        HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
     
     - name: yarn install
       run: |
@@ -39,7 +39,7 @@ jobs:
 
     - name: Add remote origin
       run: |
-        echo heroku_api_key,
+        echo $HEROKU_API_KEY >> secrets.txt
         git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
     - name: Deploy to Heroku
       run: |
